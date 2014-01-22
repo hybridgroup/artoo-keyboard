@@ -11,9 +11,13 @@ module Artoo
         1234567890
       ).join.split('').freeze
 
+      attr_reader :chars
+
       # Creates a connection with device
       # @return [Boolean]
       def connect
+        @chars = Queue.new
+
         TTY.with_tty do |tty|
           tty.configure
           begin
@@ -46,9 +50,14 @@ module Artoo
         Artoo::Keyboard::VERSION
       end
 
+      def get_char
+        chars.pop
+      end
+
       private
 
       def parse_char(char)
+        chars.push char
         p char
       end
     end
