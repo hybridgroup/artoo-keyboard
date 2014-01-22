@@ -5,6 +5,12 @@ module Artoo
     # Connect to a keyboard device
     # @see device documentation for more information
     class Keyboard < Adaptor
+      STANDARD_CHARS = %w(
+        abcdefghijklmnopqrstuvwxyz
+        ABCDEFGHIJKLMNOPQRSTUVWXYZ
+        1234567890
+      ).join.split('').freeze
+
       # Creates a connection with device
       # @return [Boolean]
       def connect
