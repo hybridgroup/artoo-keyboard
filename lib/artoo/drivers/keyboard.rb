@@ -8,7 +8,8 @@ module Artoo
       # Start driver and any required connections
       def start_driver
         every(interval) do
-          p connection.get_char # get the next char if any...
+          key = connection.get_char # get the next char if any...
+          publish(event_topic_name("key"), key) if key
         end
 
         super

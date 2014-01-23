@@ -55,8 +55,8 @@ module Artoo
       private
 
       def parse_char(char)
+        # TODO: push the parsed value, here, not just the raw value. also handle ctrl-c
         chars.push char
-        p char
       end
     end
   end
