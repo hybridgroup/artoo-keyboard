@@ -11,30 +11,24 @@ module Artoo
         1234567890
       ).join.split('').freeze
 
-      attr_reader :chars
+      attr_reader :tty, :chars
 
       # Creates a connection with device
       # @return [Boolean]
       def connect
+        @tty = TTY.with_tty
+        @tty.configure
         @chars = Queue.new
-
-        TTY.with_tty do |tty|
-          tty.configure
-          begin
-            loop do
-              parse_char tty.get_char
-            end
-          ensure
-            tty.restore
-            tty.puts
-          end
-        end
+        
         super
       end
 
       # Closes connection with device
       # @return [Boolean]
       def disconnect
+        tty.restore
+        tty.puts
+
         super
       end
 
@@ -51,6 +45,7 @@ module Artoo
       end
 
       def get_char
+        parse_char tty.get_char
         chars.pop
       end
 
@@ -99,7 +94,12 @@ class TTY < Struct.new(:in_file, :out_file)
     File.open("/dev/tty", "r") do |in_file|
       File.open("/dev/tty", "w") do |out_file|
         tty = TTY.new(in_file, out_file)
-        block.call(tty)
+        if block_given?
+          block.call(tty)
+          return nil
+        else
+          return tty
+        end
       end
     end
   end
