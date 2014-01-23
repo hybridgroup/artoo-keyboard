@@ -53,6 +53,7 @@ module Artoo
       def parse_char(char)
         case char
         when KEY_CTRL_C then
+          tty.restore
           Artoo::Master.stop_work
           exit(0)
         when /[[:print:]]/ then chars.push(char)
