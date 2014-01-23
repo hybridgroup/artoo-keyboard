@@ -16,10 +16,13 @@ module Artoo
       # Creates a connection with device
       # @return [Boolean]
       def connect
-        @tty = TTY.with_tty
+        @in_file = File.open("/dev/tty", "r")
+        @out_file = File.open("/dev/tty", "w")
+        @tty = TTY.new(@in_file, @out_file)
+
         @tty.configure
         @chars = Queue.new
-        
+
         super
       end
 
