@@ -5,11 +5,7 @@ module Artoo
     # Connect to a keyboard device
     # @see device documentation for more information
     class Keyboard < Adaptor
-      STANDARD_CHARS = %w(
-        abcdefghijklmnopqrstuvwxyz
-        ABCDEFGHIJKLMNOPQRSTUVWXYZ
-        1234567890
-      ).join.split('').freeze
+      KEY_CTRL_C = ?\C-c
 
       attr_reader :tty, :chars
 
@@ -55,8 +51,13 @@ module Artoo
       private
 
       def parse_char(char)
-        # TODO: push the parsed value, here, not just the raw value. also handle ctrl-c
-        chars.push char
+        case char
+        when KEY_CTRL_C then
+          Artoo::Master.stop_work
+          exit(0)
+        when /[[:print:]]/ then chars.push(char)
+        else chars.push(nil) # unknown or non-qwerty char
+        end
       end
     end
   end
@@ -73,10 +74,6 @@ class TTY < Struct.new(:in_file, :out_file)
     out_file.puts
   end
 
-  def winsize
-    out_file.winsize
-  end
-
   def stty(args)
     command("stty #{args}")
   end
@@ -91,20 +88,6 @@ class TTY < Struct.new(:in_file, :out_file)
 
   def restore
     stty "#{@original_stty_state}"
-  end
-
-  def self.with_tty(&block)
-    File.open("/dev/tty", "r") do |in_file|
-      File.open("/dev/tty", "w") do |out_file|
-        tty = TTY.new(in_file, out_file)
-        if block_given?
-          block.call(tty)
-          return nil
-        else
-          return tty
-        end
-      end
-    end
   end
 
   private
