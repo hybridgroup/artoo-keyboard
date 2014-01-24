@@ -17,11 +17,9 @@ module Artoo
       # Creates a connection with device
       # @return [Boolean]
       def connect
-        @in_file = File.open("/dev/tty", "r")
-        @out_file = File.open("/dev/tty", "w")
-        @tty = TTY.new(@in_file, @out_file)
-
+        @tty = TTY.new
         @tty.configure
+
         @chars = Queue.new
         @buffer = []
 
@@ -56,12 +54,16 @@ module Artoo
 
       private
 
+      def quit
+        puts "QUITTING"
+        tty.restore
+        Artoo::Master.stop_work
+        exit(0)
+      end
+
       def parse_char(char)
         case char
-        when KEY_CTRL_C then
-          tty.restore
-          Artoo::Master.stop_work
-          exit(0)
+        when KEY_CTRL_C then quit
         when KEY_ESCAPE.chr then
           next_char = tty.get_char
           if next_char
@@ -83,8 +85,13 @@ module Artoo
   end
 end
 
-class TTY < Struct.new(:in_file, :out_file)
-  attr_reader :original_stty_state
+class TTY
+  attr_reader :original_stty_state, :in_file, :out_file
+
+  def initialize
+    @in_file = File.open("/dev/tty", "r")
+    @out_file = File.open("/dev/tty", "w")
+  end
 
   def get_char
     in_file.getc
@@ -123,4 +130,3 @@ class TTY < Struct.new(:in_file, :out_file)
     end
   end
 end
-
