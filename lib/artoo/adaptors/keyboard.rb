@@ -6,8 +6,13 @@ module Artoo
     # @see device documentation for more information
     class Keyboard < Adaptor
       KEY_CTRL_C = ?\C-c
+      KEY_ESCAPE = 0x1B
+      KEY_ARROW_UP = 0x41
+      KEY_ARROW_DOWN = 0x42
+      KEY_ARROW_RIGHT = 0x43
+      KEY_ARROW_LEFT = 0x44
 
-      attr_reader :tty, :chars
+      attr_reader :tty, :chars, :buffer
 
       # Creates a connection with device
       # @return [Boolean]
@@ -18,6 +23,7 @@ module Artoo
 
         @tty.configure
         @chars = Queue.new
+        @buffer = []
 
         super
       end
@@ -56,6 +62,19 @@ module Artoo
           tty.restore
           Artoo::Master.stop_work
           exit(0)
+        when KEY_ESCAPE.chr then
+          next_char = tty.get_char
+          if next_char
+            next_char = tty.get_char
+            case next_char
+            when KEY_ARROW_UP.chr then chars.push('up')
+            when KEY_ARROW_DOWN.chr then chars.push('down')
+            when KEY_ARROW_RIGHT.chr then chars.push('right')
+            when KEY_ARROW_LEFT.chr then chars.push('left')
+            end
+          else
+            chars.push(char) # just escape
+          end
         when /[[:print:]]/ then chars.push(char)
         else chars.push(nil) # unknown or non-qwerty char
         end
