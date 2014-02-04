@@ -60,6 +60,11 @@ describe Artoo::Adaptors::Keyboard do
       @adaptor.get_char.must_equal "a"
     end
 
+    it "catches the spacebar" do
+      @tty.chars << " "
+      @adaptor.get_char.must_equal "space"
+    end
+
     it "passes through escape" do
       @tty.chars << "\e"
       @adaptor.get_char.must_equal "\e"

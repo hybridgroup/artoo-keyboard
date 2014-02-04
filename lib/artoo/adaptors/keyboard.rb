@@ -64,6 +64,7 @@ module Artoo
       def parse_char(char)
         case char
         when KEY_CTRL_C then quit
+        when " " then chars.push("space")
         when KEY_ESCAPE.chr then
           next_char = tty.get_char
           if next_char
