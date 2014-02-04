@@ -1,4 +1,4 @@
-# Artoo Adaptor For Keyboard
+# Artoo Adaptor For Keyboard Input
 
 This repository contains the Artoo (http://artoo.io/) adaptor for keyboard
 input.
@@ -16,5 +16,16 @@ gem install artoo-keyboard
 ## Using
 
 ```ruby
-# your example code here...
+require 'artoo'
+
+connection :keyboard, adaptor: :keyboard
+device :keyboard, driver: :keyboard, connection: :keyboard
+
+work do
+  on keyboard, :key => :keypress
+end
+
+def keypress(sender, key)
+  puts key
+end
 ```
