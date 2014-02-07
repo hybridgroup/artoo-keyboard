@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.name        = "artoo-keyboard"
   s.version     = Artoo::Keyboard::VERSION
   s.platform    = Gem::Platform::RUBY
-  s.authors     = ["Andrew Stewart"]
+  s.authors     = ["Andrew Stewart", "Ron Evans"]
   s.email       = ["artoo@hybridgroup.com"]
   s.homepage    = "https://github.com/hybridgroup/artoo-keyboard"
   s.summary     = %q{Artoo adaptor for keyboard input}
@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   s.require_paths = ["lib"]
 
-  s.add_runtime_dependency 'artoo', '>= 1.5.0'
+  s.add_runtime_dependency 'artoo', '>= 1.6.0'
   s.add_development_dependency 'minitest', '>= 5.0'
   s.add_development_dependency 'minitest-happy'
   s.add_development_dependency 'mocha', '>= 1.0.0'
